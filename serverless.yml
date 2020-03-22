@@ -1,0 +1,42 @@
+service: s3-to-slack-deploy-pipeline
+provider:
+  name: aws
+  runtime: python3.8
+  region: us-east-1
+
+
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - "s3:*"
+      Resource: 
+        - "arn:aws:s3:::codepipeline-us-east-1-341569298189"
+        - "arn:aws:s3:::codepipeline-us-east-1-341569298189/*"
+
+package:
+  exclude:
+    - layer/**
+    - env/**
+
+layers:
+  slackdeploy:
+    path: layer
+    description: "dependencies slack"
+
+
+functions:
+  sent-to-slack-deploy:
+    handler: handler.hello
+    environment:
+      GROUP: rafabarbosa
+    layers:
+      - {Ref: SlackdeployLambdaLayer}
+    events:
+      - s3:
+         bucket: codepipeline-us-east-1-341569298189
+         event: s3:ObjectCreated:*
+         rules:
+            - prefix: hackaton-cicd-deploy/BuildArtif
+         existing: true
+            
+
