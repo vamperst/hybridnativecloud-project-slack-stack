@@ -1,18 +1,30 @@
 import sys
 sys.path.insert(0,'/opt')
 import json
-
 import boto3
-import slackweb
 import os
 import random
 import string
 from zipfile import ZipFile
 
-import os
 grupo = os.environ['GROUP']
 
 s3 = boto3.client('s3',)
+
+from slack import WebClient
+from slack.errors import SlackApiError
+
+client = WebClient(token="<TOKEN DONTPAD>")
+
+def sendMessageToSlack(message,username):
+  try:
+    response = client.chat_postMessage(
+        channel='#atividade-slack',
+        text=message,
+        username=username,)        
+  except SlackApiError as e:
+    # You will get a SlackApiError if "ok" is False
+    print(f"Got an error: {e.response['error']}")
 
 def randomString(stringLength=10):
     letters = string.ascii_lowercase
@@ -62,8 +74,6 @@ def hello(event, context):
     data = returnInformationDeploy(path)
     message = messageToSlack(data)
     
-    
-    slack = slackweb.Slack(url='https://hooks.slack.com/services/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')
-    slack.notify(text=message, channel="#integration-cicd",username="serverless bot", icon_emoji=":squirrel: :shitpit:")
+    sendMessageToSlack(message,str(grupo))
 
     
