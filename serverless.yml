@@ -10,8 +10,8 @@ provider:
       Action:
         - "s3:*"
       Resource: 
-        - "arn:aws:s3:::codepipeline-us-east-1-341569298189"
-        - "arn:aws:s3:::codepipeline-us-east-1-341569298189/*"
+        - "arn:aws:s3:::codepipeline-us-east-1-*"
+        - "arn:aws:s3:::codepipeline-us-east-1-*/*"
 
 package:
   exclude:
@@ -33,10 +33,10 @@ functions:
       - {Ref: SlackdeployLambdaLayer}
     events:
       - s3:
-         bucket: codepipeline-us-east-1-341569298189
+         bucket: codepipeline-us-east-1-180888143294
          event: s3:ObjectCreated:*
          rules:
-            - prefix: hackaton-cicd-deploy/BuildArtif
+            - prefix: hackathon-CD-app-sta/BuildArtif
          existing: true
             
 
